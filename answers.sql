@@ -131,3 +131,127 @@ SELECT region, SUM(population)/SUM(area) AS density FROM bbc GROUP BY region
 SELECT AVG(population) FROM bbc WHERE name IN ('Poland', 'Germany', 'Denmark')
 SELECT COUNT(name) FROM bbc WHERE population < 150000
 SELECT SUM(population) FROM bbc WHERE region = 'Europe'
+SELECT matchid, player FROM goal
+  WHERE teamid = 'GER'
+SELECT id,stadium,team1,team2
+    FROM game WHERE id = 1012
+SELECT player, teamid, stadium, mdate
+      FROM game JOIN goal ON (id=matchid) WHERE teamid = 'GER'
+SELECT team1, team2, player FROM game JOIN goal ON (id = matchid) WHERE player LIKE 'Mario%'
+SELECT player, teamid, coach,gtime
+  FROM goal JOIN eteam ON (teamid = eteam.id)
+ WHERE gtime<=10
+SELECT mdate, teamname FROM game JOIN eteam ON  team1 = eteam.id WHERE coach =  'Fernando Santos'
+SELECT player FROM game JOIN goal ON id = goal.matchid WHERE stadium =  'National Stadium, Warsaw'
+SELECT DISTINCT player
+  FROM game JOIN goal ON matchid = id
+    WHERE (team1='GER' OR team2='GER') AND teamid != 'GER';
+SELECT teamname, COUNT(teamid)
+      FROM eteam JOIN goal ON id=teamid
+     GROUP BY teamname
+SELECT stadium, COUNT(teamid) FROM game JOIN goal ON id= goal.matchid
+     GROUP BY stadium
+SELECT matchid , mdate,  COUNT(teamid)
+       FROM game JOIN goal ON matchid = id
+      WHERE (team1 = 'POL' OR team2 = 'POL') GROUP BY matchid, mdate;
+SELECT matchid, mdate, COUNT(teamid) FROM game JOIN goal ON matchid = id WHERE teamid= 'GER'
+      GROUP BY matchid, mdate
+SELECT DISTINCT mdate, team1,
+      SUM(CASE WHEN teamid=team1 THEN 1 ELSE 0 END) score1, team2, SUM(CASE WHEN teamid=team2 THEN 1 ELSE 0 END) score2
+      FROM game JOIN goal ON matchid = id
+      GROUP BY mdate,team1,team2
+      ORDER BY mdate;
+game  JOIN goal ON (id=matchid)
+matchid, teamid, player, gtime, id, teamname, coach
+SELECT player, teamid, COUNT(*)
+  FROM game JOIN goal ON matchid = id
+ WHERE (team1 = "GRE" OR team2 = "GRE")
+   AND teamid != 'GRE'
+ GROUP BY player, teamid
+ SELECT DISTINCT player, teamid
+  FROM game JOIN goal ON matchid = id
+ WHERE stadium = 'National Stadium, Warsaw'
+AND (team1 = 'POL' OR team2 = 'POL')
+  AND teamid != 'POL'
+SELECT DISTINCT player, teamid, gtime
+    FROM game JOIN goal ON matchid = id
+   WHERE stadium = 'Stadion Miejski (Wroclaw)'
+     AND (( teamid = team2 AND team1 != 'ITA') OR ( teamid = team1 AND team2 != 'ITA'))
+SELECT id, title
+      FROM movie
+      WHERE yr=1962
+SELECT yr FROM movie WHERE title =  'Citizen Kane'
+SELECT id, title, yr FROM movie WHERE title LIKE '%Star Trek%' ORDER BY yr
+SELECT id FROM actor WHERE name =  'Glenn Close'
+SELECT id FROM movie WHERE title = 'Casablanca'
+SELECT name FROM actor JOIN casting ON id = actorid WHERE movieid = 11768
+SELECT name FROM actor JOIN casting ON id = actorid JOIN movie on casting.movieid = movie.id WHERE title = 'Alien'
+SELECT title FROM movie JOIN casting ON casting.movieid = movie.id JOIN actor ON actor.id = actorid WHERE name =   'Harrison Ford'
+SELECT title FROM movie JOIN casting ON casting.movieid = movie.id JOIN actor ON actor.id = actorid WHERE name =   'Harrison Ford' AND ord != 1
+SELECT title, name FROM movie JOIN casting ON casting.movieid = movie.id JOIN actor ON actor.id = actorid WHERE ord = 1 AND yr = 1962
+SELECT yr,COUNT(title) FROM
+  movie JOIN casting ON movie.id=movieid
+        JOIN actor   ON actorid=actor.id
+WHERE name='Rock Hudson'
+GROUP BY yr
+HAVING COUNT(title) > 2
+SELECT DISTINCT  title, name FROM movie JOIN casting ON movie.id = movieid JOIN actor ON actor.id = actorid WHERE movieid IN (
+SELECT movieid FROM casting
+WHERE actorid IN (
+  SELECT id FROM actor
+  WHERE name='Julie Andrews')
+) AND ord =1
+SELECT name FROM actor JOIN casting ON actor.id = actorid WHERE ord =1
+GROUP BY name
+HAVING COUNT(*) >= 15
+SELECT title, COUNT(actorid) FROM movie JOIN casting ON movieid = movie.id JOIN actor ON actor.id = actorid WHERE yr = 1978
+GROUP BY title
+ORDER BY COUNT(actorid) DESC, title
+SELECT DISTINCT name FROM actor JOIN casting ON actorid = id JOIN movie ON movieid = movie.id WHERE movieid IN
+(SELECT movieid FROM actor JOIN casting ON id = actorid WHERE name =  'Art Garfunkel') AND name != 'Art Garfunkel'
+SELECT name
+  FROM actor INNER JOIN movie ON actor.id = director
+ WHERE gross < budget
+SELECT *
+   FROM actor JOIN casting ON actor.id = actorid
+   JOIN movie ON movie.id = movieid
+SELECT name, COUNT(movieid)
+     FROM casting JOIN actor ON actorid=actor.id
+    WHERE name LIKE 'John %'
+    GROUP BY name ORDER BY 2 DESC
+SELECT name
+      FROM movie JOIN casting ON movie.id = movieid
+      JOIN actor ON actor.id = actorid
+    WHERE ord = 1 AND director = 351
+SELECT name FROM teacher WHERE dept IS NULL
+SELECT teacher.name, dept.name
+ FROM teacher INNER JOIN dept
+           ON (teacher.dept=dept.id)
+SELECT teacher.name, dept.name
+            FROM teacher LEFT JOIN dept
+            ON (teacher.dept=dept.id)
+SELECT teacher.name, dept.name
+            FROM teacher RIGHT JOIN dep
+            ON (teacher.dept=dept.id)
+SELECT name, COALESCE(mobile, '07986 444 2266') FROM teacher
+SELECT teacher.name, COALESCE(dept.name, 'None') FROM teacher LEFT join dept ON teacher.dept = dept.id
+SELECT COUNT(name), COUNT(mobile) FROM teacher
+SELECT dept.name, COUNT(teacher.id) FROM teacher RIGHT JOIN dept ON dept.id = teacher.dept
+GROUP BY dept.name
+SELECT teacher.name,
+CASE WHEN dept IN (1,2)
+THEN 'Sci'
+ELSE 'Art'
+END
+FROM teacher
+SELECT teacher.name,
+CASE WHEN dept IN (1,2)
+THEN 'Sci'
+WHEN dept = 3 THEN 'Art'
+ELSE 'None'
+END
+ FROM teacher
+SELECT teacher.name, dept.name FROM teacher LEFT OUTER JOIN dept ON (teacher.dept = dept.id)
+SELECT dept.name FROM teacher JOIN dept ON (dept.id = teacher.dept) WHERE teacher.name = 'Cutflower'
+SELECT dept.name, COUNT(teacher.name) FROM teacher RIGHT JOIN dept ON dept.id = teacher.dept GROUP BY dept.name
+ 
